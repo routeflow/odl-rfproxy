@@ -55,7 +55,6 @@ public class Activator extends ComponentActivatorAbstractBase {
             //Name is required to register IListenDataPacket.class 
             Dictionary<String, Object> props = new Hashtable<String, Object>();
             props.put("salListenerName", "rfproxy");
-            props.put("salListenerDependency", "bgpsec");
 
             //Register Listeners
             c.setInterface(new String[] { IInventoryListener.class.getName(),
