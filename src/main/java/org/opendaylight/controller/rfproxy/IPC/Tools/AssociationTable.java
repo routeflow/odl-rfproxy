@@ -13,51 +13,39 @@ import org.opendaylight.controller.rfproxy.IPC.Tools.VS;
 
 
 public class AssociationTable {
-	private Map<DP, VS> dp_to_vs;
-	private Map<VS, DP> vs_to_dp;
+	private Map<DP, VS> assoc_table;
 
 	public AssociationTable() {
-		dp_to_vs = new HashMap<DP, VS>();
-		vs_to_dp = new HashMap<VS, DP>(); 
+		assoc_table = new HashMap<DP, VS>();
 	}
 
 	public void update_dp_port(DP dp, VS vs) {
-		if (this.dp_to_vs.containsKey(dp)) {
-			VS old_vs = this.dp_to_vs.get(dp);
-			this.vs_to_dp.remove(old_vs);
-		}
-		this.dp_to_vs.put(dp, vs);
-		this.vs_to_dp.put(vs, dp);
+		this.assoc_table.put(dp, vs);
 	}
 
 	public VS dp_port_to_vs_port(DP dp) {
-		if (this.dp_to_vs.containsKey(dp)) {
-			return this.dp_to_vs.get(dp);
+		if (this.assoc_table.containsKey(dp)) {
+			return this.assoc_table.get(dp);
 		} else {
 			return null;
 		}
 	}
 
 	public DP vs_port_to_dp_port(VS vs) {
-		if (this.vs_to_dp.containsKey(vs) == true) {
-			return this.vs_to_dp.get(vs);
-		} else {
-			return null;
+		for (DP dp : this.assoc_table.keySet()) {
+		  if (this.assoc_table.get(o).equals(vs))
+		    return dp;
 		}
+
+		return null;
 	}
 
 	public void delete_dp(long dp_id) {
-		Set<DP> toRemove = new HashSet<DP>();
+		for (Iterator<DP> i = this.assoc_table.keySet().iterator(); i.hasNext()) {
+			DP dp = i.next();
 
-		for (Iterator<DP> i = this.dp_to_vs.keySet().iterator(); i.hasNext();) {
-			DP element = i.next();
-			if (element.getDp_id() == dp_id) {
-				toRemove.add(element);
-			}
-		}
-
-		for (Iterator<DP> i = toRemove.iterator(); i.hasNext();) {
-			this.vs_to_dp.remove(this.dp_to_vs.remove(i.next()));
+			if (dp.getDp_id() == dp_id) 
+				this.assoc_table.remove(dp);
 		}
 	}
 }

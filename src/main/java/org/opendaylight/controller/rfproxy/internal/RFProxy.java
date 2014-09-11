@@ -189,10 +189,10 @@ public class RFProxy implements IInventoryListener, IListenDataPacket {
     public void notifyNode(Node node, UpdateType type,
             Map<String, Property> propMap){
 
-    		// Get id of the datapath
-			Long dp_id = (Long) node.getID(); // Get dp id
-
     		if(type == UpdateType.REMOVED){
+    			// Get id of the datapath
+				long dp_id = (long) node.getID(); // Get dp id
+
     			// Delete from the association table
 				this.table.delete_dp(dp_id);
 
