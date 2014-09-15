@@ -9,7 +9,6 @@ import java.net.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-
 import org.opendaylight.controller.rfproxy.IPC.IPC.IPCMessage;
 import org.opendaylight.controller.rfproxy.IPC.IPC.IPCMessageProcessor;
 import org.opendaylight.controller.rfproxy.IPC.IPC.IPCMessageService;
@@ -251,13 +250,12 @@ public class RFProxy implements IInventoryListener, IListenDataPacket {
 
 		// Get ethernet type using the match
 		OFMatch match = new OFMatch();
-		match.loadFromPacket(inPkt.getPacketData(), (short) Integer.parseInt(in.getID().toString()));
+		match.loadFromPacket(inPkt.getPacketData(), 
+			(short) Integer.parseInt(in.getID().toString()));
 		Short ethernetType = match.getDataLayerType();
 
 		// If packet is of type LLDP or has a type lower than 0, ignore
-		if (ethernetType == EtherTypes.LLDP.shortValue())
-			return PacketResult.IGNORED;
-		else if(ethernetType < 0)
+		if (ethernetType == EtherTypes.LLDP.shortValue() || ethernetType < 0)
 			return PacketResult.IGNORED;
 
 		// Decode the RawPacket
@@ -267,8 +265,6 @@ public class RFProxy implements IInventoryListener, IListenDataPacket {
 		DP from = new DP(Long.valueOf(in.getNode().getID().toString()).longValue() , 
 						Integer.parseInt(in.getID().toString()));
 
-
-		this.logger.debug("Received data packet");
 		if(ethernetType == defs.RF_ETH_PROTO){ // Received Mapping packet
 			//process packet
 			byte[] data = inPkt.getPacketData();
@@ -318,7 +314,7 @@ public class RFProxy implements IInventoryListener, IListenDataPacket {
 				this.logger.debug("Unmapped RFVS port (vs_id=" + dp.getDp_id() + 
 					", vs_port=" + (short) dp.getDp_port() + ")");
 		}
-		else { // Received Packet from other a Datapath
+		else { // Received Packet from a Datapath
 			/* Translate the datapath to its corresponding virtual switch
 				 using the association table */
 			DP dp = new DP(from.getDp_id(), from.getDp_port());
@@ -379,39 +375,39 @@ public class RFProxy implements IInventoryListener, IListenDataPacket {
      *******************************************************************/
 
     public void setFlowProgrammerService(IFlowProgrammerService flowProgrammerService){
-        this.logger.info("Setting FlowProgrammerService");
+        this.logger.debug("Setting FlowProgrammerService");
         this.programmer = flowProgrammerService;
     }
 
     public void unsetFlowProgrammerService(IFlowProgrammerService flowProgrammerService){
     	if(this.programmer == flowProgrammerService){
-    		logger.info("Unsetting FlowProgrammerService");
+    		this.logger.debug("Unsetting FlowProgrammerService");
     		this.programmer = null;
     	}
     }
 
     public void setDataPacketService(IDataPacketService dpService) {
-    	this.logger.info("Setting DataPacket Service");
+    	this.logger.debug("Setting DataPacket Service");
 
     	this.dataPacketService = dpService;
     }
 
     public void unsetDataPacketService(IDataPacketService dpService) {
     	if(this.dataPacketService == dpService){
-    		this.logger.info("Unsetting DataPacket Service");
+    		this.logger.debug("Unsetting DataPacket Service");
     		this.dataPacketService = null;
     	}
     }
     
     public void setSwitchManager(ISwitchManager manager) {
-    	this.logger.info("Setting switch manager");
+    	this.logger.debug("Setting switch manager");
 
     	this.switchMgr = manager;
     }
 
     public void unsetSwitchManager(ISwitchManager manager) {
     	if(this.switchMgr == manager){	
-    		this.logger.info("Unsetting switch manager");
+    		this.logger.debug("Unsetting switch manager");
     		this.switchMgr = null;
     	}
     }

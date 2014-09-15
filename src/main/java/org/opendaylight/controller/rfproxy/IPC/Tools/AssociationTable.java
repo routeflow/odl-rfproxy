@@ -1,12 +1,9 @@
 package org.opendaylight.controller.rfproxy.IPC.Tools;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.opendaylight.controller.rfproxy.IPC.Tools.DP;
 import org.opendaylight.controller.rfproxy.IPC.Tools.VS;
