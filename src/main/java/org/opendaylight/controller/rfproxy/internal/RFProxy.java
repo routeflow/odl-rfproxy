@@ -350,14 +350,6 @@ public class RFProxy implements IInventoryListener, IListenDataPacket {
 	 *******************************************************************/
 
     /**
-     * Function called by the dependency manager when all the required
-     * dependencies are satisfied
-     */
-	public void init(){
-		this.logger.info("Initializing RFProxy.");
-	}
-
-    /**
      * Function called by dependency manager after "init ()" is called and after
      * the services provided by the class are registered in the service registry
      */
@@ -445,7 +437,6 @@ public class RFProxy implements IInventoryListener, IListenDataPacket {
      */
     public class RFProtocolProcessor extends IPCMessageProcessor implements
             messagesTypes {
-        @SuppressWarnings("unused")
         private IPCMessageService ipc;
         private Logger logger;
  
