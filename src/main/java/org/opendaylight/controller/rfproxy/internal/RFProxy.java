@@ -9,6 +9,8 @@ import java.net.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import java.io.*;
+
 import org.opendaylight.controller.rfproxy.IPC.IPC.IPCMessage;
 import org.opendaylight.controller.rfproxy.IPC.IPC.IPCMessageProcessor;
 import org.opendaylight.controller.rfproxy.IPC.IPC.IPCMessageService;
@@ -39,12 +41,16 @@ import org.opendaylight.controller.sal.match.*;
 import org.opendaylight.controller.sal.flowprogrammer.Flow;
 import org.opendaylight.controller.sal.flowprogrammer.IFlowProgrammerService;
 
+import org.json.JSONException;
+
 import org.openflow.protocol.factory.BasicFactory;
 import org.openflow.protocol.action.OFAction;
 import org.openflow.protocol.action.OFActionOutput;
 import org.openflow.protocol.OFPacketOut;
 import org.openflow.protocol.OFMatch;
 import org.openflow.protocol.OFType;
+
+import org.opendaylight.controller.bgpsec.IBGPSecHandler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,7 +72,7 @@ public class RFProxy implements IInventoryListener, IListenDataPacket {
 	private RFProtocolFactory factory;
 	private RFProtocolProcessor processor;
 	private BasicFactory basicFactory;
-
+	private IBGPSecHandler handler;
 	/* SAL modules, required for listening to packets, manage switches and program (install/remove) flows */
 	private IDataPacketService dataPacketService;
 	private ISwitchManager switchMgr;
@@ -133,7 +139,6 @@ public class RFProxy implements IInventoryListener, IListenDataPacket {
     		else
     			this.logger.info("Error removing flow ({})", status.getDescription());
 		}    		    			
-
     }
 
     /**
@@ -303,6 +308,7 @@ public class RFProxy implements IInventoryListener, IListenDataPacket {
 		else if (from.getDp_id() == defs.RFVS_DPID){ // Received Packet from RFVS
 			/* Translate the virtual switch to its corresponding datapath
 				 using the association table */
+
 			VS vs = new VS(from.getDp_id(), from.getDp_port());
 			DP dp = table.vs_port_to_dp_port(vs);
 
@@ -317,6 +323,11 @@ public class RFProxy implements IInventoryListener, IListenDataPacket {
 		else { // Received Packet from a Datapath
 			/* Translate the datapath to its corresponding virtual switch
 				 using the association table */
+
+			IPv4 pkt = this.handler.verify(packet);
+			if(pkt != null)
+				PacketResult res = this.handler.validate(pkt);
+
 			DP dp = new DP(from.getDp_id(), from.getDp_port());
 			VS vs = table.dp_port_to_vs_port(dp);
 
@@ -369,7 +380,6 @@ public class RFProxy implements IInventoryListener, IListenDataPacket {
 
 	}
 
-
     /*******************************************************************
      ****************************   Setters   **************************
      *******************************************************************/
@@ -411,7 +421,20 @@ public class RFProxy implements IInventoryListener, IListenDataPacket {
     		this.switchMgr = null;
     	}
     }
-	
+
+
+	public void setBGPSecHandler(IBGPSecHandler bgpsec){
+		this.logger.debug("Setting BGP handler");
+
+		this.handler = bgpsec;
+	}
+
+	public void unsetBGPSecHandler(IBGPSecHandler bgpsec){
+		if(this.handler == bgpsec){
+			this.logger.debug("Unsetting BGP handler");
+			this.handler = null;
+		}
+	}
 
     /*******************************************************************
      ************************   RFProcessor Class   ********************
@@ -437,7 +460,6 @@ public class RFProxy implements IInventoryListener, IListenDataPacket {
                 IPCMessage msg) {
 
             int type = msg.get_type();
-            this.logger.debug("Message of type: " + type);
 
             if (type == messagesTypes.RouteMod) // received a RouteMod Message
             	process_flow_mod((RouteMod) msg);

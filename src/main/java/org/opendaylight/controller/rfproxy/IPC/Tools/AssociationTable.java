@@ -30,7 +30,7 @@ public class AssociationTable {
 
 	public DP vs_port_to_dp_port(VS vs) {
 		for (DP dp : this.assoc_table.keySet()) {
-		  if (this.assoc_table.get(o).equals(vs))
+		  if (this.assoc_table.get(dp).equals(vs))
 		    return dp;
 		}
 
@@ -38,7 +38,8 @@ public class AssociationTable {
 	}
 
 	public void delete_dp(long dp_id) {
-		for (Iterator<DP> i = this.assoc_table.keySet().iterator(); i.hasNext()) {
+		Iterator<DP> i = this.assoc_table.keySet().iterator();
+		while (i.hasNext()) {
 			DP dp = i.next();
 
 			if (dp.getDp_id() == dp_id) 
