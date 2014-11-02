@@ -131,12 +131,17 @@ public class RouteMod extends IPCMessage implements fields, messagesTypes {
 
             byte[] value = (byte[]) o.get("value");
             byte[] ipvalue = new byte[4];
+            byte[] mask = new byte[4];
 
             for(int i=0; i < 4; i++)
                 ipvalue[i] = value[i];
 
+            for(int j=0; j < 4; j++)
+                mask[j] = value[j+4];
+
             try{
-                this.match.setField(MatchType.NW_DST, InetAddress.getByAddress(ipvalue));
+                this.match.setField(MatchType.NW_DST, InetAddress.getByAddress(ipvalue), 
+                    InetAddress.getByAddress(mask));
                 this.match.setField(MatchType.DL_TYPE, EtherTypes.IPv4.shortValue());
             }
             catch(UnknownHostException e){
