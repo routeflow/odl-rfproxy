@@ -31,7 +31,9 @@ public class VS {
 			return true;
 		if (obj == null)
 			return false;
+
 		VS other = (VS) obj;
+
 		return this.vs_id == other.vs_id && this.vs_port == other.vs_port;
 	}
 
@@ -39,6 +41,7 @@ public class VS {
 	public int hashCode() {
 		int result = 0;
 		result = (int) (vs_id / 12) + vs_port;
+		
 		return result;
 	}
 

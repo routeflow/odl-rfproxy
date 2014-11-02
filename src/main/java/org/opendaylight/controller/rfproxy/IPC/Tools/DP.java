@@ -29,9 +29,11 @@ public class DP {
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (obj == null)
+		else if (obj == null)
 			return false;
+
 		DP other = (DP) obj;
+
 		return this.dp_id == other.dp_id && this.dp_port == other.dp_port;
 	}
 
@@ -39,6 +41,7 @@ public class DP {
 	public int hashCode() {
 		int result = 0;
 		result = (int) (dp_id / 12) + dp_port;
+
 		return result;
 	}
 
