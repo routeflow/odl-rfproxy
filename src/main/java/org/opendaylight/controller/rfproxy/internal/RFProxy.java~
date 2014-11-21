@@ -325,9 +325,8 @@ public class RFProxy implements IInventoryListener, IListenDataPacket {
 				 using the association table */
 
 			IPv4 pkt = this.handler.verify(packet);
-			if(pkt != null){
+			if(pkt != null)
 				PacketResult res = this.handler.validate(pkt);
-			}
 
 			DP dp = new DP(from.getDp_id(), from.getDp_port());
 			VS vs = table.dp_port_to_vs_port(dp);
